@@ -24,7 +24,7 @@ sys.stderr = Tee(sys.stderr, log_file, move=False)
 VersionMap = 'version_map'
 DownloadDir = os.path.join(BuildEnv.SynoBase, 'toolkit_tarballs')
 ToolkitServer = 'https://archive.synology.com/download/ToolChain/toolkit'
-Product = "DSM"
+Product = ""
 
 
 @cache
