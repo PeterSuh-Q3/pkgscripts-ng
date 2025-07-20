@@ -17,9 +17,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
+          
       - name: Set up DSM build environment
-        working-directory: ./pkgscripts-ng
+        working-directory: .
         run: |
           # DSM 버전 7.2, noarch 플랫폼 환경 구축
           ./EnvDeploy -v 7.2 -p noarch
@@ -32,7 +32,7 @@ jobs:
           cp -R DSM7.2/mypkg/change_panel_size/* ${BUILD_ROOT}/source/ChangePanelSize/
 
       - name: Build .spk package
-        working-directory: ./pkgscripts-ng
+        working-directory: .
         run: |
           # ChangePanelSize 패키지 빌드
           ./PkgCreate.py -v 7.2 -p noarch -c ChangePanelSize
