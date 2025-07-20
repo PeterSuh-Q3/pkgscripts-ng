@@ -1,0 +1,45 @@
+```yaml
+name: Build Synology SPK
+
+on:
+  push:
+    branches:
+      - DSM7.2
+  workflow_dispatch:
+
+jobs:
+  build-spk:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up DSM build environment
+        working-directory: ./pkgscripts-ng
+        run: |
+          # DSM 버전 7.2, noarch 플랫폼 환경 구축
+          ./EnvDeploy -v 7.2 -p noarch
+
+      - name: Prepare source directory
+        run: |
+          # Toolkit chroot 루트 경로에 패키지 소스 복사
+          BUILD_ROOT=./pkgscripts-ng/build_env/ds.noarch-7.2/root
+          mkdir -p ${BUILD_ROOT}/source/ChangePanelSize
+          cp -R DSM7.2/mypkg/change_panel_size/* ${BUILD_ROOT}/source/ChangePanelSize/
+
+      - name: Build .spk package
+        working-directory: ./pkgscripts-ng
+        run: |
+          # ChangePanelSize 패키지 빌드
+          ./PkgCreate.py -v 7.2 -p noarch -c ChangePanelSize
+
+      - name: Upload SPK artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: change_panel_size-spk
+          path: pkgscripts-ng/result_spk/*.spk
