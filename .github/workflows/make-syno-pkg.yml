@@ -21,8 +21,8 @@ jobs:
       - name: Set up DSM build environment
         working-directory: .
         run: |
-          # DSM 버전 7.2, noarch 플랫폼 환경 구축
-          ./EnvDeploy -v 7.2 -p noarch
+          # DSM 버전 7.2, apollolake 플랫폼 환경 구축
+          ./EnvDeploy -v 7.2 -p apollolake
 
       - name: Prepare source directory
         run: |
@@ -35,7 +35,7 @@ jobs:
         working-directory: .
         run: |
           # ChangePanelSize 패키지 빌드
-          ./PkgCreate.py -v 7.2 -p noarch -c ChangePanelSize
+          ./PkgCreate.py -v 7.2 -p apollolake -c ChangePanelSize
 
       - name: Upload SPK artifact
         uses: actions/upload-artifact@v4
