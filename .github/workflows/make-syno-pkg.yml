@@ -17,11 +17,19 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+     # 1) Override the runner's tar to skip device‐node creation
+      - name: Shim tar to ignore devices
+        run: |
+          sudo mv /usr/bin/tar /usr/bin/tar.orig
+          echo '#!/usr/bin/env bash' | sudo tee /usr/bin/tar
+          echo 'exec /usr/bin/tar.orig --no-devices "$@"' | sudo tee -a /usr/bin/tar
+          sudo chmod +x /usr/bin/tar          
           
       - name: Set up DSM build environment
-        working-directory: .
+        working-directory: ./pkgscripts-ng
         run: |
-          # DSM 버전 7.2, apollolake 플랫폼 환경 구축
+          # DSM 7.2 chroot 환경 배포 (apollolake 플랫폼)
           ./EnvDeploy -v 7.2 -p apollolake
 
       - name: Prepare source directory
@@ -32,10 +40,10 @@ jobs:
           cp -R DSM7.2/mypkg/change_panel_size/* ${BUILD_ROOT}/source/ChangePanelSize/
 
       - name: Build .spk package
-        working-directory: .
+        working-directory: ./pkgscripts-ng
         run: |
-          # ChangePanelSize 패키지 빌드
-          ./PkgCreate.py -v 7.2 -p apollolake -c ChangePanelSize
+          # SPK 빌드 (패키지 아키텍처는 noarch)
+          ./PkgCreate.py -v 7.2 -p apollolake -c ChangePanelSize --package-arch noarch      
 
       - name: Upload SPK artifact
         uses: actions/upload-artifact@v4
